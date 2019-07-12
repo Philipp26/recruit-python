@@ -17,9 +17,6 @@ class time_handler:
         dates = []
 
         for message in messages:
-            j = re.sub(' +',' ', message)
-            j = j.split(" ")
-            if len(j) > 1:
-                dates.append(j[1])
+            dates.append(message["time"])
 
         return dates

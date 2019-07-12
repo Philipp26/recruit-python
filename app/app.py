@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 from sql_query import sql_query
 from file_mod import file_msg
-from json_parser import json_parser
 from time_mod import time_handler
-import chardet
+import json
 
 class App:
     def show(self, environ, start_response):
@@ -27,16 +26,20 @@ class App:
         length = int(environ['CONTENT_LENGTH'])
 
         body = environ['wsgi.input'].read(length).decode('utf-8')
+        messages = json.loads(body)
 
-        messages = json_parser().json_parse(body)
         file_msg().prepare_for_save(messages)
 
         sql = sql_query()
+
         time_hdlr = time_handler()
+
         message_data = time_hdlr.get_timestamp_dates(messages)
+
         sql.insert_query("dialogs", ["start_time", "end_time", "message_count"], [str(message_data[0]),str( message_data[-1]), str(len(message_data))])
 
         start_response(status, [('Content-Length', '0')])
+
         return [b'']
 
     def represent_response(self, messages):
